@@ -7,6 +7,7 @@ module.exports = function(app, db) {
    app.get('/', indexURL)
    app.get('/new/:url*', postURL)
    app.get('/:url', getURL)
+   app.get('/login', function)
 
    function indexURL(req, res) {
 
