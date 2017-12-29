@@ -1,11 +1,12 @@
 var path = require('path');
+var mongo = require('mongodb');
 var APP_URL = 'https://nadir-url.herokuapp.com/';
 
 module.exports = function(app, db) {
 
    app.get('/', indexURL)
-   app.post('/urls/:url*', postURL)
-   app.get('/urls/:url', getURL)
+   app.get('/new/:url*', postURL)
+   app.get('/:url', getURL)
 
    function indexURL(req, res) {
 
@@ -37,7 +38,7 @@ module.exports = function(app, db) {
    function postURL(req, res) {
 
       var redirect_url = req.url.slice(5)
-
+      console.log(db);
       if (validateURL(redirect_url)) {
          //generate a random four digit number
          var entry = {
