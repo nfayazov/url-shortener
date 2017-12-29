@@ -1,8 +1,9 @@
 'use strict';
 
 const FacebookStrategy = require('passport-facebook').Strategy,
-      User = require('/../models/users'),
-      dotenv = require('dotenv').load();
+      User = require('../models/users'),
+      dotenv = require('dotenv').load(),
+      configAuth = require('./auth.js');
 
 module.exports = function(passport) {
    passport.serializeUser(function (user, done) {
@@ -16,13 +17,13 @@ module.exports = function(passport) {
    });
 
    passport.use(new FacebookStrategy({
-      clientID: process.env.FACEBOOK_APP_ID,
-      clientSecret: process.env.FACEBOOK_APP_SECRET,
-      callbackURL: process.env.APP_URL
+      clientID: configAuth.facebookAuth.clientID,
+      clientSecret: configAuth.facebookAuth.clientSecret,
+      callbackURL: configAuth.facebookAuth.callbackURL
    }, 
    function(token, refreshToken, profile, done) {
       process.nextTick(function () {
-         User.findOne({'facebook.id': profile.id }, function(err, done) {
+         User.findOne({'facebook.id': profile.id }, function(err, user) {
             if (err) return done(err);
             if (user) return done(null, user)
             else {

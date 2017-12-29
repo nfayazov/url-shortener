@@ -2,26 +2,28 @@
 
 var express = require("express"),
     routes = require('./app/routes/index.js'),
-    mongo = require('mongodb').MongoClient;
+    passport = require('passport'),
+    session = require('express-session'),
+    mongoose = require('mongoose');
     
+require('dotenv').load();
+require('./app/config/passport')(passport);
+
 var app = express();
 
 app.use('/controllers', express.static(process.cwd() + '/app/controllers'));
 app.use('/public', express.static(process.cwd() + '/public'));
 
-mongo.connect('mongodb://localhost:27017/url-notifier', function(err, db) {
-   if (err) throw err
-   else {
+mongoose.connect('mongodb://localhost:27017/url-notifier');
 
-      routes(app, db)
+app.use(passport.initialize());
+app.use(passport.session());
 
-      var port = process.env.PORT || '3000'
+routes(app, passport);
 
-      app.listen(port, function(err) {
-         if (err) throw err;
-      })
-   }
+var port = process.env.PORT || '8000';
 
-})
-
+app.listen(port, function(err) {
+    if (err) throw err;
+});
 
