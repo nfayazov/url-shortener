@@ -3,7 +3,7 @@
 const FacebookStrategy = require('passport-facebook').Strategy,
       User = require('../models/users'),
       dotenv = require('dotenv').load(),
-      configAuth = require('./auth.js');
+      configAuth = require('./auth');
 
 module.exports = function(passport) {
    passport.serializeUser(function (user, done) {
@@ -19,30 +19,31 @@ module.exports = function(passport) {
    passport.use(new FacebookStrategy({
       clientID: configAuth.facebookAuth.clientID,
       clientSecret: configAuth.facebookAuth.clientSecret,
-      callbackURL: configAuth.facebookAuth.callbackURL
+      callbackURL: configAuth.facebookAuth.callbackURL,
+      enableProof: true
    }, 
    function(token, refreshToken, profile, done) {
       process.nextTick(function () {
          User.findOne({'facebook.id': profile.id }, function(err, user) {
             if (err) return done(err);
-            if (user) return done(null, user)
-            else {
+            if (user) {
+               return done(null, user);
+            }  else {
                var newUser = new User();
 
                newUser.facebook.id = profile.id;
                newUser.facebook.username = profile.username;
-               newUser.facebook.displayName = profile.diplayName;
-               newUser.urls = [];
+               newUser.facebook.displayName = profile.displayName;
+               //newUser.urls = [];
 
                newUser.save(function(err) {
                   if (err) {
-                     throw err;
+                     return done(err);
                   }
-
                   return done(null, newUser);
                });
             }
-         })
+         });
       });
    }));
 };

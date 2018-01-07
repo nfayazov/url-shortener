@@ -16,6 +16,12 @@ app.use('/public', express.static(process.cwd() + '/public'));
 
 mongoose.connect('mongodb://localhost:27017/url-notifier');
 
+app.use(session({
+    secret: 'absolutelySecureSecret',
+    resave: false,
+    saveUninitialized: true
+}));
+
 app.use(passport.initialize());
 app.use(passport.session());
 

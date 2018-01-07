@@ -4,6 +4,14 @@ const path = process.cwd();
 
 module.exports = function(app, passport) {
 
+   function isLoggedIn(req, res, next) {
+      if (req.isAuthenticated()) {
+         return next();
+      } else {
+         res.redirect('/login');
+      }
+   }
+
    app.route('/')
       .get(isLoggedIn, function(req, res) {
          res.sendFile(path + '/public/index.html');
@@ -20,19 +28,20 @@ module.exports = function(app, passport) {
    app.get('/:url', getURL)
    app.get('/login')*/
 
-   app.get('/auth/facebook/callback',
-      passport.authenticate('facebook', { failureRedirect: '/login' }),
+   app.route('/auth/facebook/callback')
+      .get(passport.authenticate('facebook', { failureRedirect: '/login' }),
       function (req, res) {
-         // Successful authentication, redirect home. 
+         // Successful authentication, redirect home.
          res.redirect('/');
-      });
-
-
-   function isLoggedIn (req, res, next) {
-      if (req.isAuthenticated()) {
-         return next();
-      } else {
-         res.redirect('/auth/facebook');
+      },
+      function(err, req, res, next) {
+         // You could put your own behavior in here, fx: you could force auth again...
+         // res.redirect('/auth/facebook/');
+         if(err) {
+            res.status(400);
+            res.end(err.message );
+         }
       }
-   }
+   );
+
 }

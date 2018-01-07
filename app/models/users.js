@@ -8,8 +8,8 @@ const User = new Schema({
       id: String,
       displayName: String,
       username: String
-   },
-   urls: []
+   }
+   //urls: []
 })
 
 module.exports = mongoose.model('User', User);
